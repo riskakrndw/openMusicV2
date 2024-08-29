@@ -41,11 +41,13 @@ exports.up = (pgm) => {
   });
 
   // memberikan constraint foreign key
-  pgm.addConstraint(
-    "song",
-    "fk_song.song_album.id",
-    "FOREIGN KEY(album_id) REFERENCES album(id) ON DELETE CASCADE"
-  );
+  pgm.addConstraint("song", "fk_song.album", {
+    foreignKeys: {
+      columns: "albumId",
+      references: "album(id)",
+      onDelete: "CASCADE",
+    },
+  });
 };
 
 /**
