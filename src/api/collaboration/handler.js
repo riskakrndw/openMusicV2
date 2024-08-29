@@ -1,5 +1,3 @@
-const { MapCollaboration } = require("../../utils/index");
-
 class CollaborationHandler {
   constructor(service, validator) {
     this._service = service;
@@ -11,18 +9,16 @@ class CollaborationHandler {
   }
 
   async postCollaborationHandler(request, h) {
-    console.log("request.payload===", request.payload);
     this._validator.validateCollaboration(request.payload);
-    console.log("coba2===");
 
     const { playlistId, userId } = request.payload;
-    console.log("coba3===", playlistId, userId, request.auth.credentials);
+
+    await this._service.isUserExist(userId);
+    await this._service.isPlaylistExist(playlistId);
 
     const { id: credentialId } = request.auth.credentials;
-    console.log("coba4===", credentialId);
-    await this._service.verifyPlaylistOwner(playlistId, credentialId);
+    await this._service.isPlaylistOwner(credentialId, playlistId);
 
-    console.log("coba5===");
     const collaborationId = await this._service.addCollaboration({
       playlistId,
       userId,
@@ -42,6 +38,9 @@ class CollaborationHandler {
 
   async deleteCollaborationHandler(request, h) {
     const { playlistId, userId } = request.payload;
+
+    const { id: credentialId } = request.auth.credentials;
+    await this._service.isPlaylistOwner(credentialId, playlistId);
     await this._service.deleteCollaboration(playlistId, userId);
 
     const response = h.response({

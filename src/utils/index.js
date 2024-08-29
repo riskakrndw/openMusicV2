@@ -14,10 +14,29 @@ const MapSong = ({ id, title, year, performer, genre, duration, albumId }) => ({
   albumId,
 });
 
+const MapSongByPlaylist = ({ id, title, performer }) => ({
+  id,
+  title,
+  performer,
+});
+
 const MapPlaylist = ({ id, name, username }) => ({
   id,
   name,
   username,
 });
 
-module.exports = { MapAlbum, MapSong, MapPlaylist };
+const MapActivity = ({ username, title, action, time }) => ({
+  username,
+  title,
+  action,
+  time,
+});
+
+module.exports = {
+  MapAlbum,
+  MapSong,
+  MapSongByPlaylist,
+  MapPlaylist,
+  MapActivity,
+};

@@ -1,5 +1,8 @@
 const { Pool } = require("pg");
 const { nanoid } = require("nanoid");
+const NotFoundError = require("../../exceptions/NotFoundError");
+const AuthorizationError = require("../../exceptions/AuthorizationError");
+const InvariantError = require("../../exceptions/InvariantError");
 
 class CollaborationService {
   constructor() {
@@ -7,24 +10,19 @@ class CollaborationService {
   }
 
   async addCollaboration({ playlistId, userId }) {
-    console.log("col1===", playlistId, userId);
     const id = nanoid(16);
-    console.log("col1.2");
 
     const query = {
       text: "INSERT INTO collaborations VALUES($1, $2, $3) RETURNING id",
       values: [id, playlistId, userId],
     };
-    console.log("col2");
 
     try {
       const result = await this._pool.query(query);
-      console.log("col3");
 
       if (!result.rows[0].id) {
         throw new InvariantError("Collaboration gagal ditambahkan");
       }
-      console.log("add5");
 
       return result.rows[0].id;
     } catch (error) {
@@ -46,6 +44,48 @@ class CollaborationService {
         "Collaboration gagal dihapus. Id tidak ditemukan"
       );
     }
+  }
+
+  async isPlaylistOwner(credentials, playlistId) {
+    const query = {
+      text: "SELECT * FROM playlists WHERE owner = $1 AND id = $2",
+      values: [credentials, playlistId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new AuthorizationError("No auth");
+    }
+
+    return true;
+  }
+
+  async isUserExist(userId) {
+    const query = {
+      text: "SELECT * FROM users WHERE id = $1",
+      values: [userId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError("User tidak ditemukan");
+    }
+
+    return true;
+  }
+
+  async isPlaylistExist(playlistId) {
+    const query = {
+      text: "SELECT * FROM playlists WHERE id = $1",
+      values: [playlistId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError("Playlist tidak ditemukan");
+    }
+
+    return true;
   }
 }
 
