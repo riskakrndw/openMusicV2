@@ -28,16 +28,21 @@ class LikeHandler {
   async getLikeHandler(request, h) {
     const { id: albumId } = request.params;
 
-    const count_like = await this._service.getLike(albumId);
+    const data_like = await this._service.getLike(albumId);
 
     const response = h.response({
       status: "success",
       data: {
-        likes: +count_like["cnt"],
+        likes: +data_like.cnt,
       },
     });
 
     response.code(200);
+
+    if (data_like.source === "cache") {
+      response.header("X-Data-Source", "cache");
+    }
+
     return response;
   }
 

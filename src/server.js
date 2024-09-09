@@ -61,7 +61,11 @@ const like = require("./api/like");
 const LikeService = require("./services/postgres/like");
 const LikeValidator = require("./validator/like");
 
+// cache
+const CacheService = require("./services/redis/CacheService");
+
 const init = async () => {
+  const cacheService = new CacheService();
   const albumService = new AlbumService();
   const songService = new SongService();
   const usersService = new UsersService();
@@ -71,7 +75,7 @@ const init = async () => {
   const collaborationService = new CollaborationService();
   const activityService = new ActivityService();
   const storageService = new StorageService();
-  const likeService = new LikeService();
+  const likeService = new LikeService(cacheService);
 
   const server = Hapi.server({
     port: process.env.PORT,

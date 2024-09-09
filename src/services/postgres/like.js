@@ -6,8 +6,9 @@ const InvariantError = require("../../exceptions/InvariantError");
 const ClientError = require("../../exceptions/ClientError");
 
 class LikeService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addLike(credentialId, albumId) {
@@ -30,16 +31,30 @@ class LikeService {
     if (!result.rows[0].id) {
       throw new InvariantError("Like gagal ditambahkan");
     }
+
+    await this._cacheService.delete(`like:${albumId}`);
   }
 
   async getLike(albumId) {
-    const query = {
-      text: "SELECT COUNT(id) AS cnt FROM user_album_likes WHERE album_id = $1 GROUP BY album_id",
-      values: [albumId],
-    };
-    const result = await this._pool.query(query);
+    try {
+      const result = await this._cacheService.get(`like:${albumId}`);
+      return { cnt: JSON.parse(result), source: "cache" };
+    } catch (error) {
+      const query = {
+        text: "SELECT COUNT(id) AS cnt FROM user_album_likes WHERE album_id = $1 GROUP BY album_id",
+        values: [albumId],
+      };
+      const result = await this._pool.query(query);
 
-    return result.rows[0];
+      const likeCount = result.rows[0]?.cnt || 0;
+
+      await this._cacheService.set(
+        `like:${albumId}`,
+        JSON.stringify(+likeCount)
+      );
+
+      return { cnt: likeCount, source: "db" };
+    }
   }
 
   async deleteLike(credentialId, albumId) {
@@ -49,6 +64,8 @@ class LikeService {
     };
 
     const result = await this._pool.query(query);
+
+    await this._cacheService.delete(`like:${albumId}`);
   }
 
   async isAlbumExist(albumId) {
