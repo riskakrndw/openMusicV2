@@ -21,9 +21,7 @@ class UploadsHandler {
     );
 
     const { id } = request.params;
-    console.log("ssss 1", id, fileLocation);
     await this._service.addCoverUrl(id, fileLocation);
-    console.log("ssss 2");
 
     const response = h.response({
       status: "success",

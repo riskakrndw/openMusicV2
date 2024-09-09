@@ -61,15 +61,12 @@ class StorageService {
 
   async addCoverUrl(id, fileLocation) {
     try {
-      console.log("addCoverUrl 1", id, fileLocation);
       const query = {
         text: "UPDATE album SET cover_url = $1 WHERE id = $2 RETURNING id",
         values: [fileLocation, id],
       };
-      console.log("addCoverUrl 2");
 
       const result = await this._pool.query(query);
-      console.log("addCoverUrl 3");
 
       if (!result.rows.length) {
         throw new NotFoundError("Gagal memperbarui album. Id tidak ditemukan");
