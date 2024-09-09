@@ -4,7 +4,6 @@ const ClientError = require("./exceptions/ClientError");
 
 const Hapi = require("@hapi/hapi");
 const Jwt = require("@hapi/jwt");
-const path = require("path");
 
 // album
 const album = require("./api/album");

@@ -9,7 +9,6 @@ const routes = (handler) => [
         multipart: true,
         output: "stream",
         parse: true,
-        allow: "multipart/form-data",
       },
     },
   },

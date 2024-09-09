@@ -1,3 +1,4 @@
+const NotFoundError = require("../../exceptions/NotFoundError");
 const {
   S3Client,
   PutObjectCommand,

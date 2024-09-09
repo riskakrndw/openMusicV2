@@ -1,7 +1,6 @@
 const { Pool } = require("pg");
 const { nanoid } = require("nanoid");
 const NotFoundError = require("../../exceptions/NotFoundError");
-const AuthorizationError = require("../../exceptions/AuthorizationError");
 const InvariantError = require("../../exceptions/InvariantError");
 const ClientError = require("../../exceptions/ClientError");
 
@@ -28,8 +27,10 @@ class LikeService {
       values: [id, credentialId, albumId],
     };
 
+    const result = await this._pool.query(query);
+
     if (!result.rows[0].id) {
-      throw new InvariantError("Like gagal ditambahkan");
+      throw new InvariantError("Like gagal ditambahkan", query);
     }
 
     await this._cacheService.delete(`like:${albumId}`);
@@ -63,7 +64,7 @@ class LikeService {
       values: [credentialId, albumId],
     };
 
-    const result = await this._pool.query(query);
+    await this._pool.query(query);
 
     await this._cacheService.delete(`like:${albumId}`);
   }
