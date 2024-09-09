@@ -34,6 +34,8 @@ class AlbumHandler {
     const album = await this._service.getAlbumById(id);
     const songs = await this._service.getSongsByAlbumId(id);
 
+    console.log("album===", album);
+
     const response = h.response({
       status: "success",
       data: {
@@ -41,10 +43,13 @@ class AlbumHandler {
           id: album["id"],
           name: album["name"],
           year: album["year"],
+          coverUrl: album["cover_url"],
           songs: songs,
         },
       },
     });
+
+    console.log("response===", response);
 
     response.code(200);
     return response;

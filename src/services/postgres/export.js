@@ -9,19 +9,16 @@ class ExportService {
   }
 
   async verifyPlaylistOwner(id, owner) {
-    console.log("verifyPlaylistOwner 1");
     const query = {
       text: "SELECT * FROM playlists WHERE id = $1",
       values: [id],
     };
-    console.log("verifyPlaylistOwner 2");
     const result = await this._pool.query(query);
-    console.log("verifyPlaylistOwner 3");
 
     if (!result.rows.length) {
       throw new NotFoundError("Playlist tidak ditemukan");
     }
-    console.log("verifyPlaylistOwner 4");
+
     const playlist = result.rows[0];
 
     if (playlist.owner !== owner) {

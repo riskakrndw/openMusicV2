@@ -15,6 +15,4 @@ const routes = (handler) => [
   },
 ];
 
-console.log("Route /albums/{id}/covers terdaftar");
-
 module.exports = routes;

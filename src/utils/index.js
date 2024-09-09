@@ -1,7 +1,8 @@
-const MapAlbum = ({ id, name, year }) => ({
+const MapAlbum = ({ id, name, year, cover_url }) => ({
   id,
   name,
   year,
+  cover_url,
 });
 
 const MapSong = ({ id, title, year, performer, genre, duration, albumId }) => ({

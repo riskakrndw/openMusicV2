@@ -8,7 +8,6 @@ const ProducerService = {
   _pool: new Pool(), // Inisialisasi koneksi database
 
   sendMessage: async (queue, message) => {
-    console.log("ProducerService 1");
     const connection = await amqp.connect(process.env.RABBITMQ_SERVER);
     const channel = await connection.createChannel();
     await channel.assertQueue(queue, {
@@ -16,7 +15,6 @@ const ProducerService = {
     });
 
     await channel.sendToQueue(queue, Buffer.from(message));
-    console.log("Pesan dikirim:", message);
 
     setTimeout(() => {
       connection.close();
@@ -32,17 +30,13 @@ const ProducerService = {
       text: "SELECT * FROM playlists WHERE id = $1",
       values: [id],
     };
-    console.log("verifyPlaylistOwner 2");
     const result = await this._pool.query(query);
-    console.log("verifyPlaylistOwner 3");
 
     if (!result.rows.length) {
       throw new NotFoundError("Playlist tidak ditemukan");
     }
-    console.log("verifyPlaylistOwner 4");
     const playlist = result.rows[0];
 
-    console.log("verifyPlaylistOwner 1", playlist.owner, owner);
     if (playlist.owner !== owner) {
       throw new AuthorizationError("Anda tidak berhak mengakses resource ini");
     }

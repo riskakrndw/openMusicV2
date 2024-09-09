@@ -13,26 +13,16 @@ class StorageService {
   writeFile(file, meta) {
     const filename = +new Date() + meta.filename;
     const path = `${this._folder}/${filename}`;
-    console.log("Writing file to path:", path);
-    console.log("file===");
-
-    console.log("file type:", typeof file);
-    console.log(
-      "file isReadableStream:",
-      file instanceof require("stream").Readable
-    );
 
     if (!(file instanceof Readable)) {
       throw new Error("Invalid file stream. Expected Readable stream.");
     }
 
-    console.log("writeFile 1");
     if (!file || !file.pipe) {
       throw new Error("Invalid file stream.");
     }
 
     const fileStream = fs.createWriteStream(path);
-    console.log("writeFile 2");
 
     return new Promise((resolve, reject) => {
       fileStream.on("error", (error) => {

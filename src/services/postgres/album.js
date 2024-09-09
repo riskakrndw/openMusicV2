@@ -46,6 +46,7 @@ class AlbumService {
       throw new NotFoundError("Album tidak ditemukan");
     }
 
+    console.log("result.rows===", result.rows[0]);
     return result.rows.map(MapAlbum)[0];
   }
 
